@@ -1,5 +1,5 @@
 from http import client
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, StringRelatedField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, StringRelatedField, PrimaryKeyRelatedField, SlugRelatedField
 from django.db.models import Sum
 
 from .models import Clients, Organizations, Bills
@@ -8,6 +8,8 @@ from .models import Clients, Organizations, Bills
 class ClientSerializer(ModelSerializer):
     count_organisations = SerializerMethodField('get_count_orgs')
     sum_bills = SerializerMethodField('get_sum_bills')
+    client_name = StringRelatedField()
+    client_org = StringRelatedField()
     class Meta:
         model = Clients
         fields = ['name', 'count_organisations', 'sum_bills']
@@ -21,12 +23,15 @@ class ClientSerializer(ModelSerializer):
     def get_sum_bills(self, obj):
         get_bills = Bills.objects.filter(client_name = obj.id)
         result = get_bills.aggregate(sum_of_bills=Sum('sum'))
+        if not result["sum_of_bills"]:
+            result["sum_of_bills"] = 0
         return result["sum_of_bills"]
        
 #Cчета клиентов
 class BillsSerializer(ModelSerializer):
+    client_name = StringRelatedField()
+    client_org = StringRelatedField()
     class Meta:
-        client_name = StringRelatedField()
         model = Bills
         fields = ['client_name', 'client_org', 'num', 
                   'sum', 'date', 'service', 'fraud_score', 

@@ -9,6 +9,9 @@ class Organizations(models.Model):
     class Meta:
         unique_together = ('client_name', 'name')
 
+    def __str__(self):
+        return self.name
+
 #Клиенты
 class Clients(models.Model):
     name = models.CharField(unique=True, max_length=300)
