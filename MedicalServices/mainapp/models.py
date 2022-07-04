@@ -10,8 +10,11 @@ class Organizations(models.Model):
 class Clients(models.Model):
     name = models.CharField(unique=True, max_length=300)
 
+    def __str__(self):
+        return self.name
+
 #Счета организации
-class Org_bills(models.Model):
+class Bills(models.Model):
     client_name = models.ForeignKey('Clients', on_delete=models.CASCADE)
     client_org = models.ForeignKey('Organizations', on_delete=models.CASCADE)
     id = models.BigIntegerField(primary_key=True, default=None)
