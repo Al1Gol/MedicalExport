@@ -10,22 +10,24 @@ from modules.detector import detector
 from .serializers import ClientSerializer, OrganizationSerializer, BillsSerializer
 from .models import Clients, Organizations, Bills
 
+#Контроллер импорта данных из таблиц Excel
 class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
     serializer_class = BillsSerializer
     queryset = Bills.objects.all()
 
     def get_queryset(self):
+
+        #Обновление списка клиентов
         df = pd.read_excel(rf'{settings.BASE_DIR}\client_org.xlsx', sheet_name='client')
 
-        #Контроллер обновления списка клиентов
         for el in df.values.tolist():
             if not Clients.objects.filter(name = el[0]):
                 create_client = Clients(name = el[0])
                 create_client.save()
 
+        #Обновление списка организаций   
         df = pd.read_excel(rf'{settings.BASE_DIR}\client_org.xlsx', sheet_name='organization')
-
-        #Контроллер обновления списка организаций     
+  
         for el in df.values.tolist():
             if not Organizations.objects.filter(name = el[1]).filter(client_name__name=el[0]):
                 create_org = Organizations(
@@ -34,12 +36,12 @@ class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
                     address = el[2])
                 create_org.save()
 
-        #Контроллер обновления списка счетов
         '''На данный момент при появлении совпадений по полю "№",
         API оставляет в БД исходную запись, игнорируя последующие дубликаты.
         В зависимости от требований к проекту можно доработать/изменить данный 
         функционал(например настроить обработку исключений, оповещать о событии в логах и т.д.)'''
 
+        #Обновление списка счетов
         df = pd.read_excel(rf'{settings.BASE_DIR}\bills.xlsx', sheet_name='Лист1')
 
         for el in df.values.tolist():
@@ -59,6 +61,7 @@ class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
 
         return Bills.objects.all().order_by('client_name').order_by('num')
 
+#Контроллер просмотра списка клиентов
 class ClientsViewSet(GenericViewSet, mixins.ListModelMixin):
     serializer_class = ClientSerializer
     queryset = Clients.objects.all()
