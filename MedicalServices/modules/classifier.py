@@ -14,4 +14,6 @@ def classifier(str):
 
 
 if __name__ == '__main__':
-    print(classifier('test'))
+    test = classifier('test')
+    print(test)
+    
