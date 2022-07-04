@@ -6,6 +6,9 @@ class Organizations(models.Model):
     name = models.CharField(unique=True, max_length=300)
     address = models.CharField(max_length=1000)
 
+    class Meta:
+        unique_together = ('client_name', 'name')
+
 #Клиенты
 class Clients(models.Model):
     name = models.CharField(unique=True, max_length=300)
@@ -17,10 +20,13 @@ class Clients(models.Model):
 class Bills(models.Model):
     client_name = models.ForeignKey('Clients', on_delete=models.CASCADE)
     client_org = models.ForeignKey('Organizations', on_delete=models.CASCADE)
-    id = models.BigIntegerField(verbose_name="№", primary_key=True, unique=True, default=None)
+    num = models.BigIntegerField(verbose_name="№")
     sum = models.DecimalField(max_digits= 10,decimal_places=2)
     date = models.DateField()
     service = models.CharField(max_length=1000)
     fraud_score = models.FloatField()
     service_class = models.IntegerField()
     service_name = models.CharField(max_length=100)
+
+    class Meta:
+        unique_together = ('client_org', 'num')
