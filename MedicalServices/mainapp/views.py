@@ -18,7 +18,7 @@ class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
     def get_queryset(self):
 
         #Обновление списка клиентов
-        df = pd.read_excel(rf'{settings.BASE_DIR}\client_org.xlsx', sheet_name='client')
+        df = pd.read_excel(rf'{settings.BASE_DIR}\excel_files\client_org.xlsx', sheet_name='client')
 
         for el in df.values.tolist():
             if not Clients.objects.filter(name = el[0]):
@@ -26,7 +26,7 @@ class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
                 create_client.save()
 
         #Обновление списка организаций   
-        df = pd.read_excel(rf'{settings.BASE_DIR}\client_org.xlsx', sheet_name='organization')
+        df = pd.read_excel(rf'{settings.BASE_DIR}\excel_files\client_org.xlsx', sheet_name='organization')
   
         for el in df.values.tolist():
             if not Organizations.objects.filter(name = el[1]).filter(client_name__name=el[0]):
@@ -42,7 +42,7 @@ class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
         функционал(например настроить обработку исключений, оповещать о событии в логах и т.д.)'''
 
         #Обновление списка счетов
-        df = pd.read_excel(rf'{settings.BASE_DIR}\bills.xlsx', sheet_name='Лист1')
+        df = pd.read_excel(rf'{settings.BASE_DIR}\excel_files\bills.xlsx', sheet_name='Лист1')
 
         for el in df.values.tolist():
             if not Bills.objects.filter(num = el[2]).filter(client_org__name = el[1]): 
