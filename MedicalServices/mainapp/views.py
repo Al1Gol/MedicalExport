@@ -7,10 +7,10 @@ from rest_framework.response import Response
 
 from modules.classifier import classifier
 from modules.detector import detector
-from .serializers import ClientSerializer, OrganizationSerializer, BillsSerializer
+from .serializers import ClientSerializer, BillsSerializer
 from .models import Clients, Organizations, Bills
 
-#Контроллер импорта данных из таблиц Excel
+#Вьюсет импорта данных из таблиц Excel
 class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
     serializer_class = BillsSerializer
     queryset = Bills.objects.all()
@@ -61,7 +61,28 @@ class ImportViewSet(GenericViewSet, mixins.ListModelMixin):
 
         return Bills.objects.all().order_by('client_name').order_by('num')
 
-#Контроллер просмотра списка клиентов
+#Вьюсет просмотра списка клиентов
 class ClientsViewSet(GenericViewSet, mixins.ListModelMixin):
     serializer_class = ClientSerializer
     queryset = Clients.objects.all()
+
+#Вьюсет просмотра списка счетов c фильтрацией
+class BillsViewSet(GenericViewSet, mixins.ListModelMixin):
+    serializer_class = BillsSerializer
+    queryset = Bills.objects.all()
+
+    def get_queryset(self):
+        client_name = self.request.query_params.get('client_name', None)
+        client_org = self.request.query_params.get('client_org', None)
+        #Фильтрация по клиенту и организации
+        if client_name and client_org:
+            return Bills.objects.all().filter(client_name=client_name).filter(client_org=client_org)
+        #Фильтрация по клиенту
+        elif client_name:
+            return Bills.objects.all().filter(client_name=client_name)
+        #Фильтрация по организации
+        elif client_org: 
+            return Bills.objects.all().filter(client_org=client_org)
+        #Вывод без фильртрации
+        else:
+            return Bills.objects.all()

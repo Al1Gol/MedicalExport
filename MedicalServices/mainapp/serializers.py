@@ -23,13 +23,6 @@ class ClientSerializer(ModelSerializer):
         result = get_bills.aggregate(sum_of_bills=Sum('sum'))
         return result["sum_of_bills"]
        
-#Список организаций
-class OrganizationSerializer(ModelSerializer):
-    class Meta:
-        client_name = StringRelatedField()
-        model = Organizations
-        fields = ['client_name', 'name', 'address']
-
 #Cчета клиентов
 class BillsSerializer(ModelSerializer):
     class Meta:
