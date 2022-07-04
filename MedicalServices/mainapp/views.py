@@ -76,13 +76,13 @@ class BillsViewSet(GenericViewSet, mixins.ListModelMixin):
         client_org = self.request.query_params.get('client_org', None)
         #Фильтрация по клиенту и организации
         if client_name and client_org:
-            return Bills.objects.all().filter(client_name__name=client_name).filter(client_org__name=client_org)
+            return Bills.objects.all().filter(client_name__name__contains=client_name).filter(client_org__name=client_org)
         #Фильтрация по клиенту
         elif client_name:
-            return Bills.objects.all().filter(client_name__name=client_name)
+            return Bills.objects.all().filter(client_name__name__contains=client_name)
         #Фильтрация по организации
         elif client_org: 
-            return Bills.objects.all().filter(client_org__name=client_org)
+            return Bills.objects.all().filter(client_org__name__contains=client_org)
         #Вывод без фильртрации
         else:
             return Bills.objects.all()
